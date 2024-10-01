@@ -32,7 +32,7 @@ function App() {
     setCodigo(value);
     setLoading(true);
 
-    if (value.length === 4) {
+    if (value.length >= 10) {
       const response = await getBase(value);
       handleCodigoResponse(response);
     }
@@ -97,8 +97,7 @@ function App() {
             placeholder="Código..." 
             value={codigo} 
             onChange={handleCodigoChange} 
-            loading={loading} 
-            mask="0000" 
+            loading={loading}
           />
           <ImageInput 
             imageSrc={fotoCelula} 
