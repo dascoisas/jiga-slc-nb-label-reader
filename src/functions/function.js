@@ -1,42 +1,31 @@
 import { useState } from "react";
 import { client } from "../config";
 
-const route = '/nlm/nb/implantation';
-
+const route = '/middleware/nb/implantation';
 
 export function useMac() {
   const [mac, setMac] = useState('');
 
   const getBase = async (codigo) => {
-    if(codigo === '') return { isValid: null };
-    return new Promise((resolve) => {
-      setTimeout(async() => {
-        try {
-          const response = await client.post(`${route}/${codigo}`);
-          if (response.status === 200) {
-            const getMac = response.data.mac;
-            console.log(getMac);
-            resolve({ isValid: true, getMac });
-            setMac(getMac);
-          } else {
-            resolve({ isValid: false });
-          }
-        } catch (error) {
-          resolve({ isValid: false });
-        }
-      }, 1000);
-    });
-  }
+    if (!codigo) return { isValid: null };
 
-  const salveAssociate = async (serial, iccid) => {
-    const data = {
-      mac,
-      serial,
-      iccid,
-    };
-    const response = await client.post(`${route}/create`, data);
-    return response.status;
-  }
+    try {
+      const response = await client.get(`${route}/${codigo}`);
+      if (response.status === 200 && response.data !== 0) {
+        const retrievedMac = response.data.mac;
+        setMac(retrievedMac);
+        return { isValid: true, getMac: retrievedMac };
+      } 
+      return { isValid: false };
+    } catch {
+      return { isValid: false };
+    }
+  };
 
-   return { getBase, salveAssociate, mac };
+  const saveAssociate = async (serialNumber, iccid) => {
+    const data = { mac, serialNumber, iccid };
+    return await client.post(`${route}/create`, data);
+  };
+
+  return { getBase, saveAssociate, mac };
 }
