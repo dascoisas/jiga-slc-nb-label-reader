@@ -19,7 +19,7 @@ const STATE_MAP = {
 };
 
 function App() {
-  const { getBase, saveAssociate, mac } = useMac();
+  const { getBase, create, mac } = useMac();
   
   const [codigo, setCodigo] = useState('');
   const [serial, setSerial] = useState('');
@@ -53,25 +53,25 @@ function App() {
 
   const handleButtonClick = async () => {
     if (!canSubmit()) return;
-
     setLoading(true);
-    const response = await saveAssociate(serial, iccid);
+    const response = await create(serial, iccid);
     handleResponse(response);
     setLoading(false);
   };
 
   const handleResponse = (response) => {
-    if (response.status === 200 && response.data.status !== 400) {
+    if (response.status === 200) {
       resetForm();
-      toast.success('Dispositivo associado com sucesso!');
-    } else if (response.data.status === 400) {
+      toast.success('Dispositivo criado com sucesso!');
+    } else if (response.status === 409) {
       resetForm();
-      toast.error('Dispositivo já inserido!');
+      toast.error(response.message);
     } else {
       toast.error('Erro ao comunicar com o servidor!');
     }
+    
     setIsCodigoValido(false);
-  };
+  };  
 
   const resetForm = () => {
     setCodigo('');

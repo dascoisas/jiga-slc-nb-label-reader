@@ -2,6 +2,7 @@ import { useState } from "react";
 import { client } from "../config";
 
 const route = '/api/slcnb';
+const createRoute = '/middleware/api/devices';
 
 export function useMac() {
   const [identification, setIdentification] = useState('');
@@ -22,10 +23,28 @@ export function useMac() {
     }
   };
 
-  const saveAssociate = async (serialNumber, iccid) => {
-    const data = { identification, serialNumber, iccid };
-    return await client.post(`${route}/create`, data);
+  const create = async (serialNumber, iccid) => {
+    const data = {
+      identification,
+      serialNumber,
+      iccid,
+      type: 'fotocelula',
+      techType: 'gridsafe',
+      name: serialNumber,
+    };
+  
+    try {
+      const response = await client.post(`${createRoute}/create`, data);
+      return response;
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        return { status: 409, message: 'Dispositivo já inserido!' };
+      } else {
+        return { status: error.response?.status || 500, message: 'Erro ao comunicar com o servidor!' };
+      }
+    }
   };
+  
 
-  return { getBase, saveAssociate, identification };
+  return { getBase, create, identification };
 }
