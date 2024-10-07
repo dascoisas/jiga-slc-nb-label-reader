@@ -23,6 +23,25 @@ export function useMac() {
     }
   };
 
+  const createSettings = async (serialNumber, iccid) => {
+    const data = {
+      identification,
+      serialNumber,
+      iccid,
+    };
+  
+    try {
+      const response = await client.post(`${route}/settings`, data);
+      return response;
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        return { status: 409, message: 'Dispositivo já inserido!' };
+      } else {
+        return { status: error.response?.status || 500, message: 'Erro ao comunicar com o servidor!' };
+      }
+    }
+  };
+
   const create = async (serialNumber, iccid) => {
     const data = {
       identification,
@@ -45,6 +64,5 @@ export function useMac() {
     }
   };
   
-
-  return { getBase, create, identification };
+  return { getBase, create, createSettings, identification };
 }
