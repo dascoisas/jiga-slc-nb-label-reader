@@ -19,7 +19,7 @@ const STATE_MAP = {
 };
 
 function App() {
-  const { getBase, create, mac } = useMac();
+  const { getBase, create, createSettings } = useMac();
   
   const [codigo, setCodigo] = useState('');
   const [serial, setSerial] = useState('');
@@ -55,6 +55,7 @@ function App() {
     if (!canSubmit()) return;
     setLoading(true);
     const response = await create(serial, iccid);
+    await createSettings(serial, iccid);
     handleResponse(response);
     setLoading(false);
   };
