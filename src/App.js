@@ -32,7 +32,7 @@ function App() {
     setCodigo(value);
     setLoading(true);
 
-    if (value.length >= 10) {
+    if (value.length >= 4) {
       const response = await getBase(value);
       handleCodigoResponse(response);
     }
@@ -42,6 +42,7 @@ function App() {
   const handleCodigoResponse = (response) => {
     if (response.isValid) {
       setIsCodigoValido(true);
+      setCodigo(response.getId);
       toast.success('Código encontrado!');
     } else if (response.isValid === null) {
       setIsCodigoValido(false);
@@ -54,25 +55,20 @@ function App() {
   const handleButtonClick = async () => {
     if (!canSubmit()) return;
     setLoading(true);
-    const response = await create(serial, iccid);
-    await createSettings(serial, iccid);
-    handleResponse(response);
+    const response = await create(serial, codigo);
+    if (response.status === 'ERROR') {
+      setLoading(false);
+      resetForm();
+      setIsCodigoValido(false);
+      toast.error('Falha ao registrar dispositivo!');
+      return;
+    };
+    resetForm();
+    setIsCodigoValido(false);
+    await createSettings(serial, codigo, iccid);
+    toast.success('Dispositivo criado com sucesso!');
     setLoading(false);
   };
-
-  const handleResponse = (response) => {
-    if (response.status === 200) {
-      resetForm();
-      toast.success('Dispositivo criado com sucesso!');
-    } else if (response.status === 409) {
-      resetForm();
-      toast.error(response.message);
-    } else {
-      toast.error('Erro ao comunicar com o servidor!');
-    }
-    
-    setIsCodigoValido(false);
-  };  
 
   const resetForm = () => {
     setCodigo('');
@@ -88,14 +84,14 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="images-logo">
-          <img src={nouvenn} alt="Logo" className="logo" />
+          <img src={nouvenn} alt="Logo" className="logo" style={{ width: '150px', height: '115px' }} />
         </div>
         <div className="images-container">
           <ToastSettings />
           <ImageInput 
             imageSrc={base} 
             imageText={STATE_MAP[1]} 
-            placeholder="Código..." 
+            placeholder="MAC da placa ..." 
             value={codigo} 
             onChange={handleCodigoChange} 
             loading={loading}
@@ -103,20 +99,19 @@ function App() {
           <ImageInput 
             imageSrc={fotoCelula} 
             imageText={STATE_MAP[2]} 
-            placeholder="Número de serial..." 
+            placeholder="Número de série ..." 
             value={serial} 
             onChange={(e) => isCodigoValido && setSerial(e.target.value)} 
             disabled={!isCodigoValido} 
-            mask="000000aaa000000" 
+            mask="000000SNB000000" 
           />
           <ImageInput 
             imageSrc={chip} 
             imageText={STATE_MAP[3]} 
-            placeholder="ICCID..." 
+            placeholder="Chip ICCID ..." 
             value={iccid} 
             onChange={(e) => isCodigoValido && setIccid(e.target.value)} 
             disabled={!isCodigoValido} 
-            mask="00000000000000000000" 
           />
         </div>
         <section className="buttons" style={{ marginTop: '5%' }}>

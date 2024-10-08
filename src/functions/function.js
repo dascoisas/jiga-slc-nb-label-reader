@@ -11,9 +11,9 @@ export function useMac() {
     if (!codigo) return { isValid: null };
 
     try {
-      const response = await client.get(`${route}/find/${codigo}`);
+      const response = await client.post(`http://localhost:3066/label/code/${codigo}`);
       if (response.status === 200 && response.data !== 0) {
-        const getIdentification = response.data.identification;
+        const getIdentification = response.data;
         setIdentification(getIdentification);
         return { isValid: true, getId: getIdentification };
       } 
@@ -23,7 +23,7 @@ export function useMac() {
     }
   };
 
-  const createSettings = async (serialNumber, iccid) => {
+  const createSettings = async (serialNumber, identification, iccid) => {
     const data = {
       identification,
       serialNumber,
@@ -31,7 +31,7 @@ export function useMac() {
     };
   
     try {
-      const response = await client.post(`${route}/settings`, data);
+      const response = await client.post(`http://localhost:3066/create/device/settings`, data);
       return response;
     } catch (error) {
       if (error.response && error.response.status === 409) {
@@ -42,24 +42,24 @@ export function useMac() {
     }
   };
 
-  const create = async (serialNumber, iccid) => {
+  const create = async (serialNumber, identification) => {
     const data = {
       identification,
       serialNumber,
-      iccid,
       type: 'fotocelula',
-      techType: 'gridsafe',
+      techType: 'nbiot',
       name: serialNumber,
     };
   
     try {
-      const response = await client.post(`${createRoute}/create`, data);
+      const response = await client.post(`http://localhost:3066/create/device/new`, data);
+      if (response.data.error) return { status: 'ERROR' };
       return response;
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        return { status: 409, message: 'Dispositivo já inserido!' };
+        return { status: 'ERROR', message: 'Dispositivo já inserido!' };
       } else {
-        return { status: error.response?.status || 500, message: 'Erro ao comunicar com o servidor!' };
+        return { status:'ERROR' || 500, message: 'Erro ao comunicar com o servidor!' };
       }
     }
   };

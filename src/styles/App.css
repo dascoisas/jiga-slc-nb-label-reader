@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  background: #4287f5;
+  min-height: 100vh;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-logo {
@@ -14,15 +19,16 @@
 }
 
 .App-header {
-  background-color: rgba(255, 255, 255, 0.35);
-  min-height: 100vh;
+  background-color: white;
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
   position: relative;
+  border-radius: 10px;
 }
 
 .App-link {
@@ -157,17 +163,19 @@ h1.heading {
 }
  
 .btnfos {
-  color: #000;
+  color: #ffff;
   cursor: pointer;
   display: block;
-  font-size: 22px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: bold;
   line-height: 55px;
   max-width: 160px;
   margin: 2 auto 2em;
   position: relative;
   text-transform: uppercase;
   width: 100%;
+  background: green;
+  border-radius: 10px;
 }
 @media (min-width: 400px) {
   .btnfos {
@@ -188,7 +196,6 @@ h1.heading {
 }
 
 .btnfos-1 {
-  background: linear-gradient(135deg, rgba(30, 144, 255, 0.8), rgba(0, 206, 209, 0.8));
   font-weight: 400;
 }
 .btnfos-1 svg {
