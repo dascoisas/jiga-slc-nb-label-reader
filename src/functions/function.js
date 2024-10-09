@@ -42,13 +42,15 @@ export function useMac() {
     }
   };
 
-  const create = async (serialNumber, identification) => {
+  const create = async (serialNumber, identification, codigo, iccid) => {
     const data = {
       identification,
       serialNumber,
       type: 'fotocelula',
       techType: 'nbiot',
       name: serialNumber,
+      code: codigo,
+      iccid: iccid,
     };
   
     try {

@@ -22,6 +22,7 @@ function App() {
   const { getBase, create, createSettings } = useMac();
   
   const [codigo, setCodigo] = useState('');
+  const [mac, setMac] = useState(null);
   const [serial, setSerial] = useState('');
   const [iccid, setIccid] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ function App() {
   const handleCodigoResponse = (response) => {
     if (response.isValid) {
       setIsCodigoValido(true);
-      setCodigo(response.getId);
+      setMac(response.getId);
       toast.success('Código encontrado!');
     } else if (response.isValid === null) {
       setIsCodigoValido(false);
@@ -55,7 +56,7 @@ function App() {
   const handleButtonClick = async () => {
     if (!canSubmit()) return;
     setLoading(true);
-    const response = await create(serial, codigo);
+    const response = await create(serial, mac, codigo, iccid);
     if (response.status === 'ERROR') {
       setLoading(false);
       resetForm();
@@ -74,6 +75,7 @@ function App() {
     setCodigo('');
     setSerial('');
     setIccid('');
+    setMac(null);
   };
 
   const canSubmit = () => {
@@ -92,7 +94,7 @@ function App() {
             imageSrc={base} 
             imageText={STATE_MAP[1]} 
             placeholder="MAC da placa ..." 
-            value={codigo} 
+            value={mac || codigo} 
             onChange={handleCodigoChange} 
             loading={loading}
           />
